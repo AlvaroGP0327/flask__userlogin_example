@@ -54,8 +54,7 @@ def secret():
 
 @app.route('/register',methods=['GET','POST'])
 def register():
-    """Handle user registration.
-    Detailed algorithm available at: [Register Function](DOCUMENTATION.md#Register-Function)"""
+    """Handle user registration."""
     form = RegisterForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
