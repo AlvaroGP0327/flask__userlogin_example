@@ -1,6 +1,6 @@
 # Documentation
 
-##Register-Function
+#Register-Function
 **Location**: `@app.route('/register', methods=['GET', 'POST'])`
 ### Description
 Handles user registration.
