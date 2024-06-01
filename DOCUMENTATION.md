@@ -1,4 +1,4 @@
-##Documentation
+# Documentation
 
 ##Register-Function
 **Location**: `@app.route('/register', methods=['GET', 'POST'])`
