@@ -55,6 +55,19 @@ def secret():
 @app.route('/register',methods=['GET','POST'])
 def register():
     """Handle user registration."""
+    """
+    Handle user registration.
+
+    Algorithm:
+    1. Crear una instancia de `RegisterForm`.
+    2. Si los datos ingresados son válidos:
+        a. Crear un nuevo usuario con los datos del formulario.
+        b. Agregar el usuario a la sesión de la base de datos.
+        c. Confirmar los cambios en la base de datos.
+        d. Mostrar un mensaje de éxito.
+        e. Redirigir al usuario a la página de inicio de sesión.
+    3. Renderizar la plantilla 'register.html' con el formulario.
+    """
     form = RegisterForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
@@ -69,26 +82,31 @@ def register():
 @app.route('/login',methods=['GET','POST'])
 def login():
     """Handle user login"""
+    """Algorithm:
+    1. Crear una instancia de `LoginForm`.
+    2. Si los datos ingresados son válidos:
+        a. Buscar un usuario que coincida con el email del formulario.
+        b. Si existe un usuario y la contraseña es correcta:
+            i. Logear al usuario.
+            ii. Guardar la ruta guardada en el `next` de la sesión.
+            iii. Si no hay una ruta guardada en `next` o no empieza con '/':
+                - Asignar al `next` la ruta al inicio de la aplicación.
+            iv. Redirigir al usuario a la ruta guardada en `next` o al inicio de la aplicación.
+        c. Si no se encuentra un usuario o la contraseña es incorrecta, mostrar un mensaje de error.
+    3. Renderizar la plantilla 'login.html' con el formulario.
+    """
     form = LoginForm()
-    #Si los datos ingresados son validos
     if form.validate_on_submit():
-        #buscar un usuario que coincida con el email del formulario
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
-            #Si existe un usuario y el password es correcto.Logear usuario
-            login_user(user,form.remember_me.data)
-            #guardar en next la ruta guardada en el next de la session
-            #next = request.args.get('next')
-            #Si no hay guardada ninguna ruta en el next
-            #asignar al next la ruta al inicio de la aplicacion.
-            #if next is None or not next.startswith('/'):
-                #next = url_for('index')
-            #continuar a la ruta que iba antes de logearme
-            return redirect(url_for('secret'))
-        flash('Usuario o password incorrectos')
-    
-    return render_template('login.html',form=form)
+            login_user(user, form.remember_me.data)
+            next = request.args.get('next')
+            if next is None or not next.startswith('/'):
+                next = url_for('index')
+            return redirect(next or url_for('index'))
+        flash('Usuario o contraseña incorrectos')
 
+    return render_template('login.html', form=form)
 @app.route('/logout')
 @login_required
 def logout():
